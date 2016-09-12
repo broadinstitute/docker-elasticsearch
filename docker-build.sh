@@ -1,4 +1,5 @@
 #!/bin/bash
+set -ex
 
 # build script to build elasticsearch docker images
 
