@@ -101,6 +101,8 @@ do
   docker pull broadinstitute/elasticsearch:${version}_latest
   retcode=$?
 
+  # TODO can use Rest API for docker to check to see if latest tag exists
+
   # if tag does not exist set build to true
   if [ "${retcode}" -ne 0 ]
   then
@@ -152,24 +154,31 @@ do
 
   # run docker build
   docker build -t broadinstitute/elasticsearch:${ELASTICSEARCH_VERSION}_${buildnum} .
+  retcode=$?
 
-   # TODO track error code to determine if successful build
+  # TODO track error code to determine if successful build
+  if [ "${retcode}" -ne 0 ]
+  then
+     # build failed output error and exit
+     echo "ERROR: Build failed!"
+     exit 1
+  fi
 
   # if successful tag build as latest
 
   echo "tagging build as latest"
-  echo docker tag broadinstitute/elasticsearch:${ELASTICSEARCH_VERSION}_${BUILD_NUMBER} broadinstitute/elasticsearch:${ELASTICSEARCH_VERSION}_latest 
+  docker tag broadinstitute/elasticsearch:${ELASTICSEARCH_VERSION}_${BUILD_NUMBER} broadinstitute/elasticsearch:${ELASTICSEARCH_VERSION}_latest 
 
   echo "Pushing images to dockerhub"
-  echo docker push -f broadinstitute/elasticsearch:${ELASTICSEARCH_VERSION}_${BUILD_NUMBER} 
-  echo docker push -f broadinstitute/elasticsearch:${ELASTICSEARCH_VERSION}_latest
+  docker push -f broadinstitute/elasticsearch:${ELASTICSEARCH_VERSION}_${BUILD_NUMBER} 
+  docker push -f broadinstitute/elasticsearch:${ELASTICSEARCH_VERSION}_latest
 
   # clean up all built and pulled images
 
   echo "Cleaning up pulled and built images"
-  echo docker rmi broadinstitute/elasticsearch:${ELASTICSEARCH_VERSION}_${BUILD_NUMBER}
-  echo docker rmi broadinstitute/elasticsearch:${ELASTICSEARCH_VERSION}_latest
-  echo docker rmi elasticsearch:${version}
+  docker rmi broadinstitute/elasticsearch:${ELASTICSEARCH_VERSION}_${BUILD_NUMBER}
+  docker rmi broadinstitute/elasticsearch:${ELASTICSEARCH_VERSION}_latest
+  docker rmi elasticsearch:${version}
 
 done
 
