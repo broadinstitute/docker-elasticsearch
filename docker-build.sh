@@ -97,15 +97,28 @@ do
   UPSTREAM_ES="${ELASTICSEARCH_VERSION}"
 
   # Pull latest version built for this specific version of ES in broad repo
+  docker pull broadinstitute/elasticsearch:${version}_latest
+  retcode=$?
 
   # if tag does not exist set build to true
+  if [ "${retcode}" -ne 0 ]
+  then
+     build_docker=1
+  else
+   
+     # inspect image
+     inspect=`docker inspect broadinstitute/elasticsearch:${version}_latest`
 
-  # inspect image
+     # set VERSION vars from image
+     eval `echo "$inspect" | egrep VERSION= | sed -e 's/"//g' -e 's/,//g' | awk ' { print $1 } '`
 
-  # set version vars
-
-  # compare latest JVM and ES versions to upstream
-  # if different set build_docker to 1
+     # compare latest JVM and ES versions to upstream
+     if [ "${UPSTREAM_JVM}" != "${JAVA_VERSION}" -o "${UPSTREAM_ES}" != "${ELASTICSEARCH_VERSION}" ]
+     then
+          # if different set build_docker to 1
+          build_docker=1
+     fi
+  fi
 
   if [ "${build_docker}" -eq 0 ]
   then
