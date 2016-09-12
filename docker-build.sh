@@ -8,39 +8,66 @@
 # Initialize vars
 JVM_VERS=""
 ES_VERS=""
+config_file="build-list.cfg"
+config_ok=0
+
 # flag to determine if new docker image should be built
 build_docker=0
 
 # set flags
 FORCE_BUILD=${FORCE_BUILD:-0}
 
-# replace with Jenkins var
-buildnum="1"
+# check if config exists and has entries
+
+if [ -f "${config_file}" ]
+then
+  # check if any valid entries in config file
+  # valid entries have a valid alphanumeric valut in first column
+  if  egrep -q "^[a-zA-Z0-9]+" ${config_file}
+  then
+     config_ok=1
+  else
+     echo "No valid entries in config file: ${config_file}"
+     exit 1
+  fi 
+else
+   echo "Missing build list config file: ${config_file}"
+   exit 1
+fi
+
+# if config does not exist or has no entries to build see if
+#  environment ES_VERSION ES_PLUGINS have values
 
 # NOTE: elasticsearch only keeps the newest minor version tag.  Older
 # minor version tags are deleted when a newer minor version is released
 
-# TODO read ES versions to build from config file
 
 # can be specific or just a major version number.  As long as there 
 # exists a docker tag for the string you enter
-ES_VERSIONS="2.4"
-
-# TODO read plugins to add from config file
+# ES_VERSIONS="2.4"
 
 # List of plugins to install can be a specific version or just the
 # name and script will just grab newest version.
 
-ES_PLUGINS="royrusso/elasticsearch-HQ/v2.0.3 cloud-gce mobz/elasticsearch-head "
-ES_PLUGINS="cloud-gce"
+# ES_PLUGINS="royrusso/elasticsearch-HQ/v2.0.3 cloud-gce mobz/elasticsearch-head "
+# ES_PLUGINS="cloud-gce"
 
 if [ "${FORCE_BUILD}" -ne 0 ]
 then
    echo "FORCING BUILD of all versions"
 fi
 
-for version in "${ES_VERSIONS}"
+#for version in "${ES_VERSIONS}"
+egrep "^[a-zA-Z0-9]+" ${config_file} | while read line
 do
+  # decode config line
+  version=`echo $line | cut -d ':' -f1`
+  plugins=`echo $line | cut -d ':' -f2`
+
+  # TODO maybe make config file more forgiving
+  #  - support colon separated plugins,
+  #  - supprot common separated plugins
+  #  - support multiple separators common, colon, space
 
   # ensure Dockerfile does not exist
   rm -f Dockerfile
@@ -93,7 +120,7 @@ do
   echo "FROM elasticsearch:${version}" > Dockerfile
 
   # add all plugins
-  for plugin in "${ES_PLUGINS}"
+  for plugin in "${plugins}"
   do
      echo "RUN /usr/share/elasticsearch/bin/plugin install --batch ${plugin}" >> Dockerfile
   done
