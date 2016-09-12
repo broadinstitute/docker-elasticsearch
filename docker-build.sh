@@ -143,18 +143,18 @@ do
   # if successful tag build as latest
 
   echo "tagging build as latest"
-  # docker tag broadinstitute/elasticsearch:${ELASTICSEARCH_VERSION}_${BUILD_NUMBER} broadinstitute/elasticsearch:${ELASTICSEARCH_VERSION}_latest 
+  echo docker tag broadinstitute/elasticsearch:${ELASTICSEARCH_VERSION}_${BUILD_NUMBER} broadinstitute/elasticsearch:${ELASTICSEARCH_VERSION}_latest 
 
   echo "Pushing images to dockerhub"
-  # docker push -f broadinstitute/elasticsearch:${ELASTICSEARCH_VERSION}_${BUILD_NUMBER} 
-  # docker push -f broadinstitute/elasticsearch:${ELASTICSEARCH_VERSION}_latest
+  echo docker push -f broadinstitute/elasticsearch:${ELASTICSEARCH_VERSION}_${BUILD_NUMBER} 
+  echo docker push -f broadinstitute/elasticsearch:${ELASTICSEARCH_VERSION}_latest
 
   # clean up all built and pulled images
 
   echo "Cleaning up pulled and built images"
-  # docker rmi broadinstitute/elasticsearch:${ELASTICSEARCH_VERSION}_${BUILD_NUMBER}
-  # docker rmi broadinstitute/elasticsearch:${ELASTICSEARCH_VERSION}_latest
-  # docker rmi elasticsearch:${version}
+  echo docker rmi broadinstitute/elasticsearch:${ELASTICSEARCH_VERSION}_${BUILD_NUMBER}
+  echo docker rmi broadinstitute/elasticsearch:${ELASTICSEARCH_VERSION}_latest
+  echo docker rmi elasticsearch:${version}
 
 done
 
