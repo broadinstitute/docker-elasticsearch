@@ -141,7 +141,7 @@ do
   # Construct Dockerfile for build
 
   # start with upstream image
-  echo "FROM elasticsearch:${version}" > Dockerfile
+  echo "FROM elasticsearch:${UPSTREAM_ES}" > Dockerfile
 
   # add all plugins
   for plugin in "${plugins}"
