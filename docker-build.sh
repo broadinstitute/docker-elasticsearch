@@ -148,7 +148,7 @@ do
   echo "LABEL BUILD_URL=${BUILD_URL}" >> Dockerfile
 
   # go ahead and put Dockerfile into image so you can see what it contained
-  echo "ADD Dockerfile" >> Dockerfile
+  echo "ADD Dockerfile /" >> Dockerfile
 
   # run docker build
   docker build -t broadinstitute/elasticsearch:${ELASTICSEARCH_VERSION}_${buildnum} .
