@@ -153,7 +153,7 @@ do
   echo "ADD Dockerfile /" >> Dockerfile
 
   # run docker build
-  docker build -t broadinstitute/elasticsearch:${ELASTICSEARCH_VERSION}_${buildnum} .
+  docker build -t broadinstitute/elasticsearch:${ELASTICSEARCH_VERSION}_${BUILD_NUMBER} .
   retcode=$?
 
   # TODO track error code to determine if successful build
