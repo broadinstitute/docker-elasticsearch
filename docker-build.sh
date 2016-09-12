@@ -19,6 +19,15 @@ build_docker=0
 # set flags
 FORCE_BUILD=${FORCE_BUILD:-0}
 
+# Generic error outputting function
+errorout() {
+   if [ $1 -ne 0 ];
+        then
+        echo "${2}"
+        exit $1
+    fi
+}
+
 # check if config exists and has entries
 
 if [ -f "${config_file}" ]
@@ -29,12 +38,10 @@ then
   then
      config_ok=1
   else
-     echo "No valid entries in config file: ${config_file}"
-     exit 1
+     errorout 1 "No valid entries in config file: ${config_file}"
   fi 
 else
-   echo "Missing build list config file: ${config_file}"
-   exit 1
+   errorout 1 "Missing build list config file: ${config_file}"
 fi
 
 # if config does not exist or has no entries to build see if
@@ -155,30 +162,38 @@ do
   # run docker build
   docker build -t broadinstitute/elasticsearch:${ELASTICSEARCH_VERSION}_${BUILD_NUMBER} .
   retcode=$?
-
-  # TODO track error code to determine if successful build
-  if [ "${retcode}" -ne 0 ]
-  then
-     # build failed output error and exit
-     echo "ERROR: Build failed!"
-     exit 1
-  fi
+  errorout $retcode "ERROR: Build failed!"
 
   # if successful tag build as latest
 
   echo "tagging build as latest"
   docker tag broadinstitute/elasticsearch:${ELASTICSEARCH_VERSION}_${BUILD_NUMBER} broadinstitute/elasticsearch:${ELASTICSEARCH_VERSION}_latest 
+  retcode=$?
+  errorout $retcode "Build successful but could not tag it as latest"
 
   echo "Pushing images to dockerhub"
   docker push -f broadinstitute/elasticsearch:${ELASTICSEARCH_VERSION}_${BUILD_NUMBER} 
+  retcode=$?
+  errorout $retcode "Pushing new image to docker hub"
+
   docker push -f broadinstitute/elasticsearch:${ELASTICSEARCH_VERSION}_latest
+  retcode=$?
+  errorout $retcode "Pushing latest tag image to docker hub"
 
   # clean up all built and pulled images
 
+  cleancode=0
   echo "Cleaning up pulled and built images"
   docker rmi broadinstitute/elasticsearch:${ELASTICSEARCH_VERSION}_${BUILD_NUMBER}
+  retcode=$?
+  cleancode=$(($cleancode + $retcode))
   docker rmi broadinstitute/elasticsearch:${ELASTICSEARCH_VERSION}_latest
+  retcode=$?
+  cleancode=$(($cleancode + $retcode))
   docker rmi elasticsearch:${version}
+  retcode=$?
+  cleancode=$(($cleancode + $retcode))
+  errorout $cleancode "Some images were not able to be cleaned up"
 
 done
 
