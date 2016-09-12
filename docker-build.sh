@@ -110,7 +110,7 @@ do
   if [ "${build_docker}" -eq 0 ]
   then
       echo "Skipping build of ${UPSTREAM_ES} - not necessary"
-      next
+      continue
   fi
 
   echo "Building elasticsearch version: ${UPSTREAM_ES}"
