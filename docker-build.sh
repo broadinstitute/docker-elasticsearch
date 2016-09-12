@@ -167,7 +167,7 @@ do
   # if successful tag build as latest
 
   echo "tagging build as latest"
-  docker tag broadinstitute/elasticsearch:${ELASTICSEARCH_VERSION}_${BUILD_NUMBER} broadinstitute/elasticsearch:${ELASTICSEARCH_VERSION}_latest 
+  docker tag -f broadinstitute/elasticsearch:${ELASTICSEARCH_VERSION}_${BUILD_NUMBER} broadinstitute/elasticsearch:${ELASTICSEARCH_VERSION}_latest 
   retcode=$?
   errorout $retcode "Build successful but could not tag it as latest"
 
