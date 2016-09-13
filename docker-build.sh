@@ -144,7 +144,7 @@ do
   echo "FROM elasticsearch:${UPSTREAM_ES}" > Dockerfile
 
   # add all plugins
-  for plugin in "${plugins}"
+  for plugin in ${plugins}
   do
      echo "RUN /usr/share/elasticsearch/bin/plugin install --batch ${plugin}" >> Dockerfile
   done
