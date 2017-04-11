@@ -31,6 +31,10 @@ errorout() {
     fi
 }
 
+# simple functions to parse space separated strings
+first() { echo $1; }
+rest() { shift; echo $*; }
+
 # check if config exists and has entries
 
 if [ -f "${config_file}" ]
@@ -53,16 +57,9 @@ fi
 # NOTE: elasticsearch only keeps the newest minor version tag.  Older
 # minor version tags are deleted when a newer minor version is released
 
-
 # can be specific or just a major version number.  As long as there 
 # exists a docker tag for the string you enter
 # ES_VERSIONS="2.4"
-
-# List of plugins to install can be a specific version or just the
-# name and script will just grab newest version.
-
-# ES_PLUGINS="royrusso/elasticsearch-HQ/v2.0.3 cloud-gce mobz/elasticsearch-head "
-# ES_PLUGINS="cloud-gce"
 
 if [ "${FORCE_BUILD}" -ne 0 ]
 then
@@ -72,8 +69,10 @@ fi
 egrep "^[a-zA-Z0-9]+" ${config_file} | while read line
 do
   # decode config line
-  version=`echo $line | cut -d ':' -f1`
-  plugins=`echo $line | cut -d ':' -f2`
+  # first word is version string
+  version=`first $line`
+  # the rest (if there is anymore are space separated plugins)
+  plugins=`rest $line`
   # default version option
   vers_opt="-version"
 
