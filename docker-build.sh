@@ -178,7 +178,7 @@ eval `docker run --rm ${DOCKER_REPO}elasticsearch:$version elasticsearch ${vers_
          "2") # 2.x plugin insall
              echo "RUN /usr/share/elasticsearch/bin/plugin install --batch ${plugin}" >> Dockerfile
             ;;
-         *) # assume all newer uses the following commadn
+         *) # assume all newer uses the following command
              echo "RUN /usr/share/elasticsearch/bin/elasticsearch-plugin install --batch ${plugin}" >> Dockerfile
             ;;
           esac
