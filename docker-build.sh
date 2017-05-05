@@ -20,7 +20,7 @@ build_docker=0
 FORCE_BUILD=${FORCE_BUILD:-0}
 
 # DOCKER REPO
-DOCKER_REPO="docker.elastic.co/elasticsearch/"
+ES_DOCKER_REPO="docker.elastic.co/elasticsearch/"
 
 # Generic error outputting function
 errorout() {
@@ -94,6 +94,8 @@ do
         ;;
     "2") # use docker hub
           DOCKER_REPO=""
+        ;;
+     *) DOCKER_REPO=${ES_DOCKER_REPO}
         ;;
   esac
 
