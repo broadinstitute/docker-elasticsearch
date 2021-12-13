@@ -168,6 +168,11 @@ eval `docker run --rm ${DOCKER_REPO}elasticsearch:$version elasticsearch ${vers_
   # start with upstream image
   echo "FROM ${DOCKER_REPO}elasticsearch:${UPSTREAM_ES}" > Dockerfile
 
+  # DDO-1819 Mitigation for Log4j critical vuln. 12/21
+  echo "USER root" >> Dockerfile
+  echo "RUN yum -y install zip && zip -q -d lib/log4j-core-*.jar org/apache/logging/log4j/core/lookup/JndiLookup.class" >> Dockerfile
+  echo "USER elasticsearch" >> Dockerfile
+  
   # add all plugins
   if [ "${ver_maj}" -eq "1" ]
   then
