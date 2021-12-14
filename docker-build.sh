@@ -167,7 +167,6 @@ eval `docker run --rm ${DOCKER_REPO}elasticsearch:$version elasticsearch ${vers_
 
   # start with upstream image
   echo "FROM ${DOCKER_REPO}elasticsearch:${UPSTREAM_ES}" > Dockerfile
-  
   # add all plugins
   if [ "${ver_maj}" -eq "1" ]
   then
